@@ -4,9 +4,12 @@ long_description = ""
 with open("README.md") as ifp:
     long_description = ifp.read()
 
+with open("inspector_facet/version.txt") as ifp:
+    VERSION = ifp.read().strip()
+
 setup(
     name="inspector-facet",
-    version="0.0.1",
+    version=VERSION,
     packages=find_packages(),
     install_requires=["eth-brownie", "tqdm"],
     extras_require={
@@ -34,6 +37,6 @@ setup(
             "inspector-facet=inspector_facet.cli:main",
         ]
     },
-    package_data={"inspector_facet": ["abis/*.json"]},
+    package_data={"inspector_facet": ["version.txt", "abis/*.json"]},
     include_package_data=True,
 )

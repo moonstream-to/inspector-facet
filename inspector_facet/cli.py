@@ -7,10 +7,12 @@ from brownie import network
 from .abi import project_abis
 from .inspector import inspect_diamond
 from .DiamondLoupeFacet import add_default_arguments
+from .version import VERSION
 
 
 def main():
     parser = argparse.ArgumentParser(description="Inspector Facet")
+    parser.add_argument("--version", action="version", version=VERSION)
     add_default_arguments(parser, transact=False)
     parser.add_argument(
         "-p", "--project", required=True, help="Path to brownie project"
