@@ -1,7 +1,11 @@
+import os
+
 VERSION = "UNKNOWN"
 
 try:
-    with open("inspector_facet/version.txt") as ifp:
+    PATH = os.path.abspath(os.path.dirname(__file__))
+    VERSION_FILE = os.path.join(PATH, "version.txt")
+    with open(VERSION_FILE) as ifp:
         VERSION = ifp.read().strip()
 except:
     pass
