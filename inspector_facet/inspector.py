@@ -99,17 +99,16 @@ def inspect_diamond(address: str, abis: Dict[str, Any]) -> Dict[str, Any]:
             if selector not in facets[address]
         ]
 
-        address_result["selectors"] = {
-            selector: [
-                {
-                    "contract": contract_name,
-                    "function": contract_selectors[contract_name][selector],
-                }
-                for contract_name in address_result["matches"]
-                if selector in contract_selectors[contract_name]
-            ]
+        address_result["selectors"] = [
+            {
+                "contract": contract_name,
+                "selector": selector,
+                "function": contract_selectors[contract_name][selector],
+            }
+            for contract_name in address_result["matches"]
             for selector in selectors
-        }
+            if selector in contract_selectors[contract_name]
+        ]
 
         result[address] = address_result
 
