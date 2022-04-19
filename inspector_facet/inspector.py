@@ -7,14 +7,15 @@ UNKNOWN_FUNCTION = "<unknown function>"
 UNKNOWN_CONTRACT = "<unknown contract>"
 
 
-def inspect_diamond(address: str, abis: Dict[str, Any]) -> Dict[str, Any]:
+def inspect_diamond(
+    facets: Dict[str, List[str]], abis: Dict[str, Any]
+) -> Dict[str, Any]:
     """
     Inspects the Diamond proxy on the given network at the given address against the given ABIs. Matches
     each facet address to an ABI and describes which of the functions in that ABI are loaded onto the contract.
 
     Assumes that brownie is connected to a network.
     """
-    contract = DiamondLoupeFacet.DiamondLoupeFacet(address)
     contract_selectors: Dict[str, Dict[str, str]] = {}
     for name, abi in abis.items():
         contract_selectors[name] = {}
@@ -30,11 +31,6 @@ def inspect_diamond(address: str, abis: Dict[str, Any]) -> Dict[str, Any]:
             if selector_index.get(selector) is None:
                 selector_index[selector] = []
             selector_index[selector].append(contract_name)
-
-    mounted_facets = contract.facets()
-    facets: Dict[str, List[str]] = {}
-    for address, selectors in mounted_facets:
-        facets[address] = [str(selector) for selector in selectors]
 
     facet_recalls: Dict[str, Dict[str, float]] = {}
     facet_precisions: Dict[str, Dict[str, int]] = {}
