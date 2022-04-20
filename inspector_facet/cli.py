@@ -6,7 +6,7 @@ import sys
 from brownie import network
 
 from .abi import project_abis
-from .facets import facets_from_loupe
+from .facets import facets_from_loupe, facets_from_moonworm_crawldata
 from .inspector import inspect_diamond
 from .version import VERSION
 
@@ -47,6 +47,8 @@ def main():
                 "You must provide an address for the Diamond contract that you want to pull facet information for from the network"
             )
         facets = facets_from_loupe(args.network, args.address)
+    elif args.crawl is not None:
+        facets = facets_from_moonworm_crawldata(args.crawl)
 
     if facets is None:
         raise ValueError(

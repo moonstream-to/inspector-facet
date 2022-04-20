@@ -34,6 +34,13 @@ setup(
             "inspector-facet=inspector_facet.cli:main",
         ]
     },
-    package_data={"inspector_facet": ["version.txt", "abis/*.json"]},
+    package_data={
+        "inspector_facet": [
+            "version.txt",
+            "abis/*.json",
+            "fixtures/*.json",
+            "fixtures/*.jsonl",
+        ]
+    },
     include_package_data=True,
 )

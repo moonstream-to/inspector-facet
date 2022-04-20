@@ -1,2 +1,4 @@
 include ./inspector_facet/abis/*.json
 include ./inspector_facet/version.txt
+include ./inspector_facet/fixtures/*.json
+include ./inspector_facet/fixtures/*.jsonl
