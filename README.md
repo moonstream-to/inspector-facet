@@ -19,7 +19,7 @@ We support side information obtained from:
 We support Diamond introspection:
 
 - [x] Using the `DiamondLoupeFacet` interface
-- [ ] From `DiamondCut` events crawled from the blockchain (using [`moonworm`](https://github.com/bugout-dev/moonworm)).
+- [x] From `DiamondCut` events crawled from the blockchain (using [`moonworm`](https://github.com/bugout-dev/moonworm)).
 
 ### Installation
 
@@ -61,6 +61,54 @@ inspector-facet \
     --address <address of diamond contract> \
     --project <path to brownie project (should contain build artifacts in build/contracts)> \
     --format json
+```
+
+#### With a `Diamond` contract which doesn't provide the `DiamondLoupeFacet` methods
+
+In order to inspect a `Diamond` contract which doesn't offer `DiamondLoupeFacet` functionality, you
+will need to crawl `DiamondCut` events from the blockchain. You can do this using [`moonworm`](https://github.com/bugout-dev/moonworm).
+
+First, you will need to install `moonworm`:
+
+```bash
+pip install moonworm
+```
+
+This should be done in a separate Python environment from `inspector-facet` because `brownie` pins its dependencies
+and doesn't play nice with other libraries ([GitHub issue](https://github.com/eth-brownie/brownie/issues/1516)).
+
+Once `moonworm` is installed, you can find the deployment block for your contract:
+
+```bash
+moonworm find-deployment -w <JSON RPC URL for blockchain node> -c <contract address> -t 0.5
+```
+
+Save the output of this command as `START_BLOCK`.
+
+Then crawl the `DiamondCut` event data:
+
+```bash
+moonworm watch \
+  -i inspector_facet/abis/DiamondCutFacetABI.json \
+  -w <JSON RPC URL for blockchain node> \
+  -c <contract address> \
+  --start $START_BLOCK \
+  --end <current block number> \
+  --only-events \
+  -o <output filename> \
+  --min-blocks-batch 1000 \
+  --max-blocks-batch 1000000
+```
+
+If you are crawling data from a POA chain (like Polygon), add `--poa` to the command above.
+
+Then, invoke `inspector-facet` as:
+
+```bash
+inspector-facet \
+  --crawldata <output filename> \
+  --project <path to brownie project (should contain build artifacts in build/contracts)> \
+  --format human
 ```
 
 ### Connecting to a blockchain
