@@ -1,22 +1,34 @@
 import argparse
 import json
+from multiprocessing.sharedctypes import Value
 import sys
 
 from brownie import network
 
 from .abi import project_abis
+from .facets import facets_from_loupe, facets_from_moonworm_crawldata
 from .inspector import inspect_diamond
-from .DiamondLoupeFacet import add_default_arguments
 from .version import VERSION
 
 
 def main():
     parser = argparse.ArgumentParser(description="Inspector Facet")
     parser.add_argument("--version", action="version", version=VERSION)
-    add_default_arguments(parser, transact=False)
-    parser.add_argument(
-        "-p", "--project", required=True, help="Path to brownie project"
+
+    raw_data_group = parser.add_mutually_exclusive_group(required=True)
+    raw_data_group.add_argument(
+        "--network", help="Name of brownie network to connect to"
     )
+    raw_data_group.add_argument(
+        "-c",
+        "--crawldata",
+        help="Path to JSONL (JSON Lines) file containing moonworm crawl data for contract",
+    )
+
+    parser.add_argument("--address", required=False, help="Address of Diamond contract")
+
+    parser.add_argument("-p", "--project", help="Path to brownie project")
+
     parser.add_argument(
         "--format",
         choices=["json", "human"],
@@ -28,9 +40,22 @@ def main():
 
     abis = project_abis(args.project)
 
-    network.connect(args.network)
+    facets = None
+    if args.network is not None:
+        if args.address is None:
+            raise ValueError(
+                "You must provide an address for the Diamond contract that you want to pull facet information for from the network"
+            )
+        facets = facets_from_loupe(args.network, args.address)
+    elif args.crawldata is not None:
+        facets = facets_from_moonworm_crawldata(args.crawldata)
 
-    result = inspect_diamond(args.address, abis)
+    if facets is None:
+        raise ValueError(
+            "Could not reconstruct information about currently attached methods on Diamond"
+        )
+
+    result = inspect_diamond(facets, abis)
 
     if args.format == "json":
         json.dump(result, sys.stdout)

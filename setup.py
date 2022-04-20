@@ -13,13 +13,10 @@ setup(
     packages=find_packages(),
     install_requires=["eth-brownie", "tqdm"],
     extras_require={
-        "dev": [
-            "black",
-            "moonworm >= 0.1.9",
-        ],
+        "dev": ["black"],
         "distribute": ["setuptools", "twine", "wheel"],
     },
-    description="Inspector Facet - What methods is your EIP2535 Diamond proxy contract serving?",
+    description="Inspector Facet - Inspection utility for EIP2535 Diamond proxies",
     long_description=long_description,
     long_description_content_type="text/markdown",
     author="Moonstream",
@@ -37,6 +34,13 @@ setup(
             "inspector-facet=inspector_facet.cli:main",
         ]
     },
-    package_data={"inspector_facet": ["version.txt", "abis/*.json"]},
+    package_data={
+        "inspector_facet": [
+            "version.txt",
+            "abis/*.json",
+            "fixtures/*.json",
+            "fixtures/*.jsonl",
+        ]
+    },
     include_package_data=True,
 )
