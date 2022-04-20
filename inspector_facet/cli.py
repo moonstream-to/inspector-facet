@@ -21,7 +21,7 @@ def main():
     )
     raw_data_group.add_argument(
         "-c",
-        "--crawl",
+        "--crawldata",
         help="Path to JSONL (JSON Lines) file containing moonworm crawl data for contract",
     )
 
@@ -47,8 +47,8 @@ def main():
                 "You must provide an address for the Diamond contract that you want to pull facet information for from the network"
             )
         facets = facets_from_loupe(args.network, args.address)
-    elif args.crawl is not None:
-        facets = facets_from_moonworm_crawldata(args.crawl)
+    elif args.crawldata is not None:
+        facets = facets_from_moonworm_crawldata(args.crawldata)
 
     if facets is None:
         raise ValueError(
