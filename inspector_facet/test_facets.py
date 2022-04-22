@@ -16,7 +16,8 @@ class TestFacetsFromMoonwormCrawldata(unittest.TestCase):
         with open(expected_output_json, "r") as ifp:
             expected_output = json.load(ifp)
 
-        actual_output = facets.facets_from_moonworm_crawldata(crawldata_jsonl)
+        events = facets.events_from_moonworm_crawldata(crawldata_jsonl)
+        actual_output = facets.facets_from_events(events)
 
         self.assertDictEqual(actual_output, expected_output)
 
