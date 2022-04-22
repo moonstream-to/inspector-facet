@@ -3,10 +3,12 @@ import json
 from multiprocessing.sharedctypes import Value
 import sys
 
-from brownie import network
-
 from .abi import project_abis
-from .facets import facets_from_loupe, facets_from_moonworm_crawldata
+from .facets import (
+    events_from_moonworm_crawldata,
+    facets_from_loupe,
+    facets_from_events,
+)
 from .inspector import inspect_diamond
 from .version import VERSION
 
@@ -48,7 +50,8 @@ def main():
             )
         facets = facets_from_loupe(args.network, args.address)
     elif args.crawldata is not None:
-        facets = facets_from_moonworm_crawldata(args.crawldata)
+        diamond_cut_events = events_from_moonworm_crawldata(args.crawldata)
+        facets = facets_from_events(diamond_cut_events)
 
     if facets is None:
         raise ValueError(

@@ -24,20 +24,25 @@ def facets_from_loupe(network_id: str, address: str) -> Dict[str, List[str]]:
     return facets
 
 
-def facets_from_moonworm_crawldata(crawldata_jsonl: str) -> Dict[str, List[str]]:
-    """
-    Accepts a JSON Lines file, containing a separate JSON object on each line as produced by `moonworm watch`.
-
-    Scans this file for `DiamondCut` events and reconstructs the facet attachments onto the crawled
-    Diamond contract from those events.
-    """
+def events_from_moonworm_crawldata(crawldata_jsonl: str) -> List[Dict[str, Any]]:
     diamond_cut_events: List[Dict[str, Any]] = []
     with open(crawldata_jsonl, "r") as ifp:
         for line in ifp:
             crawl_item = json.loads(line)
             if crawl_item.get("event", "") == "DiamondCut":
                 diamond_cut_events.append(crawl_item)
+    return diamond_cut_events
 
+
+def facets_from_events(
+    diamond_cut_events: List[Dict[str, Any]]
+) -> Dict[str, List[str]]:
+    """
+    Accepts a JSON Lines file, containing a separate JSON object on each line as produced by `moonworm watch`.
+
+    Scans this file for `DiamondCut` events and reconstructs the facet attachments onto the crawled
+    Diamond contract from those events.
+    """
     raw_facets: Dict[str, List[str]] = {}
     selector_index: Dict[str, str] = {}
     for event in diamond_cut_events:
