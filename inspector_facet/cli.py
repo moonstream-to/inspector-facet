@@ -1,7 +1,7 @@
 import argparse
 import json
-from multiprocessing.sharedctypes import Value
 import sys
+from typing import Any, Dict
 
 from .abi import project_abis
 from .facets import (
@@ -11,6 +11,35 @@ from .facets import (
 )
 from .inspector import inspect_diamond
 from .version import VERSION
+
+
+def print_result_for_human(result: Dict[str, Any]) -> None:
+    for address, address_result in result.items():
+        print("- - -")
+        print(f"Facet at address: {address}")
+        print(f"Possible contracts: {', '.join(address_result['matches'])}")
+        for contract_name in address_result["matches"]:
+            misses = [
+                item
+                for item in address_result["misses"]
+                if item["contract"] == contract_name
+            ]
+
+            selectors = [
+                item
+                for item in address_result["selectors"]
+                if item["contract"] == contract_name
+            ]
+
+            print(f"{contract_name}:")
+            print(f"\tMissing methods:")
+            for item in misses:
+                print(
+                    f"\t\tMissing selector: {item['selector']}, Function: {item['function']}"
+                )
+            print(f"\tMounted selectors:")
+            for item in selectors:
+                print(f"\t\tSelector: {item['selector']}, Function: {item['function']}")
 
 
 def main():
@@ -38,61 +67,41 @@ def main():
         help="Format in which to print output",
     )
 
+    parser.add_argument(
+        "--timeline",
+        action="store_true",
+        help="Produce a timeline view of the changes to the Diamond contract (can only be used with --crawldata)",
+    )
+
     args = parser.parse_args()
 
     abis = project_abis(args.project)
 
-    facets = None
-    if args.network is not None:
-        if args.address is None:
+    if not args.timeline:
+        facets = None
+        if args.network is not None:
+            if args.address is None:
+                raise ValueError(
+                    "You must provide an address for the Diamond contract that you want to pull facet information for from the network"
+                )
+            facets = facets_from_loupe(args.network, args.address)
+        elif args.crawldata is not None:
+            diamond_cut_events = events_from_moonworm_crawldata(args.crawldata)
+            facets = facets_from_events(diamond_cut_events)
+
+        if facets is None:
             raise ValueError(
-                "You must provide an address for the Diamond contract that you want to pull facet information for from the network"
+                "Could not reconstruct information about currently attached methods on Diamond"
             )
-        facets = facets_from_loupe(args.network, args.address)
-    elif args.crawldata is not None:
-        diamond_cut_events = events_from_moonworm_crawldata(args.crawldata)
-        facets = facets_from_events(diamond_cut_events)
 
-    if facets is None:
-        raise ValueError(
-            "Could not reconstruct information about currently attached methods on Diamond"
-        )
+        result = inspect_diamond(facets, abis)
 
-    result = inspect_diamond(facets, abis)
-
-    if args.format == "json":
-        json.dump(result, sys.stdout)
-    elif args.format == "human":
-        for address, address_result in result.items():
-            print("- - -")
-            print(f"Facet at address: {address}")
-            print(f"Possible contracts: {', '.join(address_result['matches'])}")
-            for contract_name in address_result["matches"]:
-                misses = [
-                    item
-                    for item in address_result["misses"]
-                    if item["contract"] == contract_name
-                ]
-
-                selectors = [
-                    item
-                    for item in address_result["selectors"]
-                    if item["contract"] == contract_name
-                ]
-
-                print(f"{contract_name}:")
-                print(f"\tMissing methods:")
-                for item in misses:
-                    print(
-                        f"\t\tMissing selector: {item['selector']}, Function: {item['function']}"
-                    )
-                print(f"\tMounted selectors:")
-                for item in selectors:
-                    print(
-                        f"\t\tSelector: {item['selector']}, Function: {item['function']}"
-                    )
-    else:
-        raise ValueError(f"Unknown format: {args.format}")
+        if args.format == "json":
+            json.dump(result, sys.stdout)
+        elif args.format == "human":
+            print_result_for_human(result)
+        else:
+            raise ValueError(f"Unknown format: {args.format}")
 
 
 if __name__ == "__main__":
