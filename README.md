@@ -105,7 +105,8 @@ Then, invoke `inspector-facet` as:
 inspector-facet \
   --crawldata <output filename> \
   --project <path to brownie project (should contain build artifacts in build/contracts)> \
-  --format human
+  --format human \
+  --timeline
 ```
 
 ### Connecting to a blockchain
