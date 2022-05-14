@@ -16,10 +16,8 @@ We support side information obtained from:
 - [ ] [hardhat](https://hardhat.org/) build artifacts
 - [ ] Etherscan/Polygonscan/etc.
 
-We support Diamond introspection:
-
-- [x] Using the `DiamondLoupeFacet` interface
-- [x] From `DiamondCut` events crawled from the blockchain (using [`moonworm`](https://github.com/bugout-dev/moonworm)).
+Inspector Facet can build a complete audit log of all Diamond-related operations on an EIP2535 proxy
+contract. Use this functionality with the `--timeline` argument.
 
 ### Installation
 
@@ -39,9 +37,9 @@ inspector-facet --help
 
 <a href="https://asciinema.org/a/487856" target="_blank"><img src="https://asciinema.org/a/487856.svg" /></a>
 
-To use Inspector Facet with:
+To use Inspector Facet:
 
-#### A `brownie` project
+#### With a `brownie` project
 
 The following command produces human-readable output:
 
@@ -63,10 +61,9 @@ inspector-facet \
     --format json
 ```
 
-#### With a `Diamond` contract which doesn't provide the `DiamondLoupeFacet` methods
+#### To build an audit log of Diamond operations on an EIP2535 proxy contract
 
-In order to inspect a `Diamond` contract which doesn't offer `DiamondLoupeFacet` functionality, you
-will need to crawl `DiamondCut` events from the blockchain. You can do this using [`moonworm`](https://github.com/bugout-dev/moonworm).
+To build an audit log, you will need to crawl `DiamondCut` events from the blockchain. You can do this using [`moonworm`](https://github.com/bugout-dev/moonworm).
 
 First, you will need to install `moonworm`:
 
