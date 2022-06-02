@@ -50,7 +50,7 @@ def inspect_diamond(
         for contract_name in facet_recalls[address]:
             facet_recalls[address][contract_name] /= len(selectors)
 
-        max_recall[address] = max(value for _, value in facet_recalls[address].items())
+        max_recall[address] = max([0] + [value for _, value in facet_recalls[address].items()])
 
         # Precision
         facet_precisions[address] = {}
