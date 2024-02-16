@@ -133,3 +133,5 @@ dmypy.json
 .venv/
 venv/
 .vscode/
+/envfiles
+/scratch

@@ -3,7 +3,7 @@ import json
 import sys
 from typing import Any, Dict, List, Optional, Tuple
 
-from .abi import project_abis
+from .abi import brownie_project_abis, foundry_project_abis
 from .facets import (
     events_from_moonworm_crawldata,
     facets_from_loupe,
@@ -145,9 +145,20 @@ def main():
         help="Produce a timeline view of the changes to the Diamond contract (can only be used with --crawldata)",
     )
 
+    parser.add_argument(
+        "--foundry",
+        action="store_true",
+        help="Use the foundry project structure instead of the brownie project structure",
+    )
+
+    parser.add_argument("--build-dir", default=None, required=False, help="Name of build directory (if it isn't the default name)")
+
     args = parser.parse_args()
 
-    abis = project_abis(args.project)
+    if not args.foundry:
+        abis = brownie_project_abis(args.project, args.build_dir)
+    else:
+        abis = foundry_project_abis(args.project, args.build_dir)
 
     if not args.timeline:
         facets = None

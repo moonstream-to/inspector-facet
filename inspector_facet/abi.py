@@ -52,8 +52,7 @@ def encode_function_signature(function_abi: Dict[str, Any]) -> Optional[str]:
     encoded_signature = Web3.keccak(text=function_signature)[:4]
     return encoded_signature.hex()
 
-
-def project_abis(project_dir: str) -> Dict[str, List[Dict[str, Any]]]:
+def foundry_project_abis(project_dir: str, build_dirname: None) -> Dict[str, List[Dict[str, Any]]]:
     """
     Load all ABIs for project contracts and return then in a dictionary keyed by contract name.
 
@@ -61,7 +60,37 @@ def project_abis(project_dir: str) -> Dict[str, List[Dict[str, Any]]]:
     - project_dir
       Path to brownie project
     """
-    build_dir = os.path.join(project_dir, "build", "contracts")
+    if build_dirname is None:
+        build_dirname = "out"
+
+    build_dir = os.path.join(project_dir, build_dirname)
+    build_files = glob.glob(os.path.join(build_dir, "*/*.json"))
+
+    abis: Dict[str, List[Dict[str, Any]]] = {}
+
+    for filepath in build_files:
+        contract_name, _ = os.path.splitext(os.path.basename(filepath))
+        with open(filepath, "r") as ifp:
+            contract_artifact = json.load(ifp)
+
+        contract_abi = contract_artifact.get("abi", [])
+
+        abis[contract_name] = contract_abi
+
+    return abis
+
+def brownie_project_abis(project_dir: str, build_dirname: None) -> Dict[str, List[Dict[str, Any]]]:
+    """
+    Load all ABIs for project contracts and return then in a dictionary keyed by contract name.
+
+    Inputs:
+    - project_dir
+      Path to brownie project
+    """
+    if build_dirname is None:
+        build_dirname = "build"
+
+    build_dir = os.path.join(project_dir, build_dirname, "contracts")
     build_files = glob.glob(os.path.join(build_dir, "*.json"))
 
     abis: Dict[str, List[Dict[str, Any]]] = {}
