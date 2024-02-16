@@ -47,7 +47,7 @@ The following command produces human-readable output:
 inspector-facet \
     --network <brownie network name for blockchain> \
     --address <address of diamond contract> \
-    --project <path to brownie project (should contain build artifacts in build/contracts)> \
+    --project <path to brownie project> \
     --format human
 ```
 
@@ -57,9 +57,39 @@ The following command produces JSON output and can be used to inspect a Diamond 
 inspector-facet \
     --network <brownie network name for blockchain> \
     --address <address of diamond contract> \
-    --project <path to brownie project (should contain build artifacts in build/contracts)> \
+    --project <path to brownie project> \
     --format json
 ```
+
+#### With a `foundry` project
+
+The following command produces human-readable output:
+
+```bash
+inspector-facet \
+    --network <brownie network name for blockchain> \
+    --address <address of diamond contract> \
+    --project <path to foundry project> \
+    --foundry \
+    --format human
+```
+
+The following command produces JSON output and can be used to inspect a Diamond contract programatically
+(e.g. as part of a CI/CD pipeline):
+```bash
+inspector-facet \
+    --network <brownie network name for blockchain> \
+    --address <address of diamond contract> \
+    --project <path to foundry project> \
+    --foundry \
+    --format json
+```
+
+#### Non-standard build directories
+
+The `--build-dir` command allows you to specify the name of the build directory in your `brownie` or
+`foundry` project in case you aren't using the standard directories (`build/` for `brownie` and `out/` for `foundry`).
+
 
 #### To build an audit log of Diamond operations on an EIP2535 proxy contract
 
