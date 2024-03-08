@@ -73,9 +73,11 @@ def foundry_project_abis(project_dir: str, build_dirname: None) -> Dict[str, Lis
         with open(filepath, "r") as ifp:
             contract_artifact = json.load(ifp)
 
-        contract_abi = contract_artifact.get("abi", [])
-
-        abis[contract_name] = contract_abi
+        try:
+            contract_abi = contract_artifact.get("abi", [])
+            abis[contract_name] = contract_abi
+        except:
+            continue
 
     return abis
 
