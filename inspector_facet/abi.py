@@ -76,7 +76,7 @@ def foundry_project_abis(project_dir: str, build_dirname: None) -> Dict[str, Lis
         try:
             contract_abi = contract_artifact.get("abi", [])
             abis[contract_name] = contract_abi
-        except:
+        except Exception:
             continue
 
     return abis
