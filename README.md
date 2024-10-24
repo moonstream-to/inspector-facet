@@ -13,7 +13,8 @@ is serving to human-understandable information about the facets and the function
 We support side information obtained from:
 
 - [x] [brownie](https://github.com/eth-brownie/brownie) build artifacts
-- [ ] [hardhat](https://hardhat.org/) build artifacts
+- [x] [foundry](https://github.com/foundry-rs/foundry) build artifacts
+- [x] [hardhat](https://hardhat.org/) build artifacts
 - [ ] Etherscan/Polygonscan/etc.
 
 Inspector Facet can build a complete audit log of all Diamond-related operations on an EIP2535 proxy
