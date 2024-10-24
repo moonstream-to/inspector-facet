@@ -86,6 +86,28 @@ inspector-facet \
     --format json
 ```
 
+#### With a `hardhat` project
+
+```bash
+inspector-facet \
+    --network <brownie network name for blockchain> \
+    --address <address of diamond contract> \
+    --project <path to foundry project> \
+    --hardhat \
+    --format human
+```
+
+The following command produces JSON output and can be used to inspect a Diamond contract programatically
+(e.g. as part of a CI/CD pipeline):
+```bash
+inspector-facet \
+    --network <brownie network name for blockchain> \
+    --address <address of diamond contract> \
+    --project <path to foundry project> \
+    --hardhat \
+    --format json
+```
+
 #### Non-standard build directories
 
 The `--build-dir` command allows you to specify the name of the build directory in your `brownie` or
