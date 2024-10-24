@@ -117,7 +117,7 @@ def hardhat_project_abis(project_dir: str, build_dirname: Optional[str] = None):
       Path to foundry project
     """
     if build_dirname is None:
-        build_dirname = "artifacts/contracts"
+        build_dirname = "artifacts"
 
     build_dir = os.path.join(project_dir, build_dirname)
     build_files = glob.glob(os.path.join(build_dir, "**/*.json"), recursive=True)
@@ -134,5 +134,5 @@ def hardhat_project_abis(project_dir: str, build_dirname: Optional[str] = None):
             abis[contract_name] = contract_abi
         except Exception:
             continue
-        
+
     return abis
