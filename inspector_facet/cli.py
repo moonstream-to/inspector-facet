@@ -3,7 +3,7 @@ import json
 import sys
 from typing import Any, Dict, List, Optional, Tuple
 
-from .abi import brownie_project_abis, foundry_project_abis
+from .abi import brownie_project_abis, foundry_project_abis, hardhat_project_abis
 from .facets import (
     events_from_moonworm_crawldata,
     facets_from_loupe,
@@ -151,14 +151,25 @@ def main():
         help="Use the foundry project structure instead of the brownie project structure",
     )
 
+    parser.add_argument(
+        "--hardhat",
+        action="store_true",
+        help="Use the hardhat project structure instead of the brownie project structure",
+    )
+
     parser.add_argument("--build-dir", default=None, required=False, help="Name of build directory (if it isn't the default name)")
 
     args = parser.parse_args()
 
-    if not args.foundry:
-        abis = brownie_project_abis(args.project, args.build_dir)
-    else:
+    if args.foundry and args.hardhat:
+        raise ValueError("You cannot specify both --foundry and --hardhat at the same time")
+
+    if args.foundry:
         abis = foundry_project_abis(args.project, args.build_dir)
+    elif args.hardhat:
+        abis = hardhat_project_abis(args.project, args.build_dir)
+    else:
+        abis = brownie_project_abis(args.project, args.build_dir)
 
     if not args.timeline:
         facets = None
